@@ -1,53 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Number Formatter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Extractor</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        textarea {
-            width: 100%;
-            height: 200px;
-        }
-        button {
-            width: 100%;
-            height: 40px;
-            margin-top: 10px;
-        }
-    </style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    max-width: 800px;
+    width: 90%;
+    background-color: #fff;
+    box-shadow: 0px 10px 20px -5px rgba(0, 0, 0, 0.3);
+    padding: 30px 40px;
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #333;
+    font-weight: 600;
+}
+
+.box {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    border: 1px solid #eaeaea;
+    box-sizing: border-box;
+    resize: none;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #84fab0;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    textarea {
+        font-size: 12px;
+    }
+}
+
+  </style>
 </head>
 <body>
-    <h1>Number Formatter</h1>
-    <textarea id="input"></textarea>
-    <button onclick="formatNumbers()">Format Numbers</button>
-    <textarea id="output"></textarea>
-
-    <script>
-        function formatNumbers() {
-            // Get the input string from the input textarea
-            let input = document.getElementById('input').value;
-
-            // Split the input string into an array of strings
-            let numbers = input.split(' ');
-
-            // Initialize output array
-            let output = [];
-
-            // Iterate over each number
-            for (let i = 0; i < numbers.length; i++) {
-                // If the index is a multiple of 3, prepend 'S'
-                if (i % 3 === 0) {
-                    output.push('S' + numbers[i]);
-                } else {
-                    // Otherwise, prepend 'B'
-                    output.push('B' + numbers[i]);
-                }
-            }
-
-            // Join the array into a string with newline characters
-            let formattedNumbers = output.join('\n');
-
-            // Display the output in the output textarea
-            document.getElementById('output').value = formattedNumbers;
-        }
-    </script>
+    <div class="container">
+        <h1>Number Extractor</h1>
+        <div class="box">
+            <label for="input">INPUT</label>
+            <textarea id="input" oninput="formatNumbers()"></textarea>
+        </div>
+        <div class="box">
+            <label for="output">OUTPUT</label>
+            <textarea id="output" readonly></textarea>
+        </div>
+    </div>
+    <script>function formatNumbers() {
+      // Get the input string from the input textarea
+      let input = document.getElementById('input').value;
+  
+      // Split the input string into an array of strings using a regex to account for spaces, tabs, and newlines
+      let numbers = input.split(/\s+/); 
+  
+      // Initialize output array
+      let output = [];
+  
+      // Iterate over each number
+      for (let i = 0; i < numbers.length; i++) {
+          // If the index is a multiple of 3, prepend 'S'
+          if (i % 3 === 0) {
+              output.push('S' + numbers[i]);
+          } else {
+              // Otherwise, prepend 'B'
+              output.push('B' + numbers[i]);
+          }
+      }
+  
+      // Join the array into a string with newline characters
+      let formattedNumbers = output.join('\n');
+  
+      // Display the output in the output textarea
+      document.getElementById('output').value = formattedNumbers;
+  }
+  </script>
 </body>
 </html>
