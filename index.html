@@ -1,4 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Extractor Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -333,3 +341,309 @@
                 font-size: 2rem;
             }
         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-calculator"></i> Number Extractor Pro</h1>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="box">
+                    <label for="input">
+                        <i class="fas fa-edit label-icon"></i>
+                        INPUT
+                    </label>
+                    <textarea id="input" placeholder="Enter your numbers here... (separated by spaces or new lines)"></textarea>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="box">
+                    <label for="output">
+                        <i class="fas fa-list-ol label-icon"></i>
+                        OUTPUT
+                    </label>
+                    <textarea id="output" readonly placeholder="Formatted numbers will appear here..."></textarea>
+                </div>
+            </div>
+
+            <div class="stats" id="stats" style="display: none;">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalNumbers">0</div>
+                    <div>Total Numbers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="sNumbers">0</div>
+                    <div>S Numbers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="bNumbers">0</div>
+                    <div>B Numbers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="blockCount">0</div>
+                    <div>Total Blocks</div>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="btn btn-primary" onclick="clearAll()">
+                    <i class="fas fa-trash-alt"></i>
+                    Clear All
+                </button>
+                <button class="btn btn-secondary" onclick="copyOutput()">
+                    <i class="fas fa-copy"></i>
+                    Copy Output
+                </button>
+                <div class="export-dropdown">
+                    <button class="btn btn-success" id="toggleExportOptions">
+                        <i class="fas fa-download"></i>
+                        Export As...
+                    </button>
+                    <div class="export-options-content" id="exportOptionsContent">
+                        <a href="#" onclick="exportData('txt'); return false;">
+                            <i class="fas fa-file-alt"></i>Export as TXT
+                        </a>
+                        <a href="#" onclick="exportData('csv'); return false;">
+                            <i class="fas fa-file-csv"></i>Export as CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" id="toastIcon"></i>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        function formatNumbers() {
+            let input = document.getElementById('input').value;
+            
+            if (!input.trim()) {
+                document.getElementById('output').value = '';
+                document.getElementById('stats').style.display = 'none';
+                document.getElementById('totalNumbers').textContent = '0';
+                document.getElementById('sNumbers').textContent = '0';
+                document.getElementById('bNumbers').textContent = '0';
+                document.getElementById('blockCount').textContent = '0';
+                return;
+            }
+
+            let numbers = input.match(/-?\d+(\.\d+)?/g) || [];
+            numbers = numbers.filter(item => item.trim() !== ''); 
+
+            let outputArray = [];
+            let sCount = 0;
+            let bCount = 0;
+            let setCounter = 0;
+            let blockCounter = 0;
+
+            // Process numbers in sets of 3
+            for (let i = 0; i < numbers.length; i += 3) {
+                // If we don't have enough numbers to complete a set, break
+                if (i + 2 >= numbers.length) break;
+
+                // Process S number (first number in set)
+                let sNum = numbers[i];
+                let isNegative = sNum.startsWith('-');
+                let absSNum = isNegative ? sNum.substring(1) : sNum;
+                let parts = absSNum.split('.');
+                let integerPart = parts[0];
+                let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
+                let paddedIntegerPart = integerPart.length < 4 ? integerPart.padStart(4, '0') : integerPart;
+                let processedSNum = (isNegative ? '-' : '') + paddedIntegerPart + decimalPart;
+                outputArray.push('S' + processedSNum);
+                sCount++;
+
+                // Process first B number
+                let b1Num = numbers[i + 1];
+                isNegative = b1Num.startsWith('-');
+                let absB1Num = isNegative ? b1Num.substring(1) : b1Num;
+                parts = absB1Num.split('.');
+                integerPart = parts[0];
+                decimalPart = parts.length > 1 ? '.' + parts[1] : '';
+                paddedIntegerPart = integerPart.length < 4 ? integerPart.padStart(4, '0') : integerPart;
+                let processedB1Num = (isNegative ? '-' : '') + paddedIntegerPart + decimalPart;
+                outputArray.push('B' + processedB1Num);
+                bCount++;
+
+                // Process second B number
+                let b2Num = numbers[i + 2];
+                isNegative = b2Num.startsWith('-');
+                let absB2Num = isNegative ? b2Num.substring(1) : b2Num;
+                parts = absB2Num.split('.');
+                integerPart = parts[0];
+                decimalPart = parts.length > 1 ? '.' + parts[1] : '';
+                paddedIntegerPart = integerPart.length < 4 ? integerPart.padStart(4, '0') : integerPart;
+                let processedB2Num = (isNegative ? '-' : '') + paddedIntegerPart + decimalPart;
+                outputArray.push('B' + processedB2Num);
+                bCount++;
+
+                setCounter++;
+
+                // Add separator after every 49 sets
+                if (setCounter === 49 && i + 3 < numbers.length) {
+                    outputArray.push('------------');
+                    blockCounter++;
+                    setCounter = 0;
+                }
+            }
+
+            let formattedNumbers = outputArray.join('\n');
+            document.getElementById('output').value = formattedNumbers;
+            
+            document.getElementById('totalNumbers').textContent = sCount + bCount;
+            document.getElementById('sNumbers').textContent = sCount;
+            document.getElementById('bNumbers').textContent = bCount;
+            document.getElementById('blockCount').textContent = Math.ceil(setCounter / 49) + blockCounter;
+            document.getElementById('stats').style.display = numbers.length > 0 ? 'grid' : 'none';
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('stats').style.display = 'none';
+            document.getElementById('totalNumbers').textContent = '0';
+            document.getElementById('sNumbers').textContent = '0';
+            document.getElementById('bNumbers').textContent = '0';
+            document.getElementById('blockCount').textContent = '0';
+            document.getElementById('input').focus();
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output');
+            if (output.value.trim() === '') {
+                showToast('Nothing to copy!', '#f44336', 'fas fa-exclamation-circle');
+                return;
+            }
+            
+            output.select();
+            navigator.clipboard.writeText(output.value).then(() => {
+                showToast('Copied to clipboard!', '#4CAF50', 'fas fa-check-circle');
+            }).catch(err => {
+                try {
+                    document.execCommand('copy');
+                    showToast('Copied to clipboard! (fallback)', '#4CAF50', 'fas fa-check-circle');
+                } catch (e) {
+                    showToast('Failed to copy.', '#f44336', 'fas fa-times-circle');
+                }
+            });
+        }
+
+        function showToast(message, color = '#4CAF50', iconClass = 'fas fa-check-circle') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            toast.style.background = color;
+            toastMessage.textContent = message;
+            toastIcon.className = iconClass; 
+            toast.style.transform = 'translateX(0) translateY(0)';
+            toast.style.opacity = '1';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(400px) translateY(0)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
+        function exportData(format) {
+            const outputText = document.getElementById('output').value;
+            if (!outputText.trim()) {
+                showToast('Nothing to export!', '#f44336', 'fas fa-exclamation-circle');
+                return;
+            }
+
+            let data;
+            let filename;
+            let mimeType;
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+
+            if (format === 'txt') {
+                data = outputText;
+                filename = `numbers_output_${timestamp}.txt`;
+                mimeType = 'text/plain;charset=utf-8;';
+            } else if (format === 'csv') {
+                const lines = outputText.split('\n');
+                let csvContent = "Type,Value\n";
+                lines.forEach(line => {
+                    if (line.trim() !== '') {
+                        const type = line.charAt(0);
+                        const value = line.substring(1);
+                        const escapedValue = value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value;
+                        csvContent += `${type},${escapedValue}\n`;
+                    }
+                });
+                data = csvContent;
+                filename = `numbers_output_${timestamp}.csv`;
+                mimeType = 'text/csv;charset=utf-8;';
+            } else {
+                return; 
+            }
+
+            const blob = new Blob([data], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            const exportOptions = document.getElementById('exportOptionsContent');
+            if (exportOptions.classList.contains('show')) {
+                exportOptions.classList.remove('show');
+            }
+            showToast(`Exported as ${format.toUpperCase()}!`, '#1abc9c', 'fas fa-download');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const boxes = document.querySelectorAll('.box');
+            boxes.forEach((box, index) => {
+                box.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            const exportBtn = document.getElementById('toggleExportOptions');
+            const exportOptions = document.getElementById('exportOptionsContent');
+
+            exportBtn.addEventListener('click', function(event) {
+                exportOptions.classList.toggle('show');
+                event.stopPropagation(); 
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!exportBtn.contains(event.target) && !exportOptions.contains(event.target)) {
+                    if (exportOptions.classList.contains('show')) {
+                        exportOptions.classList.remove('show');
+                    }
+                }
+            });
+            
+            const inputField = document.getElementById('input');
+            inputField.addEventListener('input', formatNumbers); 
+
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            inputField.addEventListener('input', (e) => {
+                const input = e.target;
+                if (input.value.trim() === '') {
+                    input.style.borderColor = '#e1e5e9';
+                } else if (!/^[\d\s.-]*$/.test(input.value)) {
+                    input.style.borderColor = '#f5576c';
+                    showToast('Please enter only numbers, spaces, and decimal points', '#f5576c', 'fas fa-exclamation-circle');
+                } else {
+                    input.style.borderColor = '#1abc9c';
+                }
+                formatNumbers();
+            });
+        });
