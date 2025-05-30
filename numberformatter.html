@@ -1,12 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Extractor Pro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 95%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: floatIn 1s ease-out;
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+            font-weight: 600;
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .box {
+            margin-bottom: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .label-icon {
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        textarea {
+            flex-grow: 1;
+            height: 350px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            box-sizing: border-box;
+            resize: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .stats {
+            order: 2;
+            margin: 0;
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 25px;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .button-container {
+            order: 1;
+            grid-column: span 2;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #1abc9c, #16a085); 
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-options-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 180px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            z-index: 100;
+            border-radius: 10px; 
+            margin-top: 8px;
+            padding: 8px 0; 
+            border: 1px solid rgba(0,0,0,0.05);
+            left: 50%;
+            transform: translateX(-50%); 
+        }
+
+        .export-options-content.show {
+            display: block;
+            animation: fadeInDown 0.3s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .export-options-content a {
+            color: #555; 
+            padding: 10px 20px; 
+            text-decoration: none;
+            display: block;
+            font-size: 15px; 
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .export-options-content a:hover {
+            background-color: #f0f2f5; 
+            color: #667eea; 
+        }
+        
+        .export-options-content a i {
+            margin-right: 8px;
+            width: 16px; 
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .stats, .button-container {
+                grid-column: span 1;
+            }
+
+            textarea {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -341,299 +667,3 @@
                 font-size: 2rem;
             }
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1><i class="fas fa-calculator"></i> Number Extractor Pro</h1>
-        
-        <div class="main-content">
-            <div class="input-section">
-                <div class="box">
-                    <label for="input">
-                        <i class="fas fa-edit label-icon"></i>
-                        INPUT
-                    </label>
-                    <textarea id="input" placeholder="Enter your numbers here... (separated by spaces or new lines)"></textarea>
-                </div>
-            </div>
-
-            <div class="output-section">
-                <div class="box">
-                    <label for="output">
-                        <i class="fas fa-list-ol label-icon"></i>
-                        OUTPUT
-                    </label>
-                    <textarea id="output" readonly placeholder="Formatted numbers will appear here..."></textarea>
-                </div>
-            </div>
-
-            <div class="stats" id="stats" style="display: none;">
-                <div class="stat-item">
-                    <div class="stat-number" id="totalNumbers">0</div>
-                    <div>Total Numbers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="sNumbers">0</div>
-                    <div>S Numbers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="bNumbers">0</div>
-                    <div>B Numbers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="blockCount">0</div>
-                    <div>Total Blocks</div>
-                </div>
-            </div>
-
-            <div class="button-container">
-                <button class="btn btn-primary" onclick="clearAll()">
-                    <i class="fas fa-trash-alt"></i>
-                    Clear All
-                </button>
-                <button class="btn btn-secondary" onclick="copyOutput()">
-                    <i class="fas fa-copy"></i>
-                    Copy Output
-                </button>
-                <div class="export-dropdown">
-                    <button class="btn btn-success" id="toggleExportOptions">
-                        <i class="fas fa-download"></i>
-                        Export As...
-                    </button>
-                    <div class="export-options-content" id="exportOptionsContent">
-                        <a href="#" onclick="exportData('txt'); return false;">
-                            <i class="fas fa-file-alt"></i>Export as TXT
-                        </a>
-                        <a href="#" onclick="exportData('csv'); return false;">
-                            <i class="fas fa-file-csv"></i>Export as CSV
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle" id="toastIcon"></i>
-        <span id="toastMessage">Copied to clipboard!</span>
-    </div>
-
-    <script>
-        function formatNumbers() {
-            let input = document.getElementById('input').value;
-            
-            if (!input.trim()) {
-                document.getElementById('output').value = '';
-                document.getElementById('stats').style.display = 'none';
-                document.getElementById('totalNumbers').textContent = '0';
-                document.getElementById('sNumbers').textContent = '0';
-                document.getElementById('bNumbers').textContent = '0';
-                document.getElementById('blockCount').textContent = '0';
-                return;
-            }
-
-            let numbers = input.match(/-?\d+(\.\d+)?/g) || [];
-            numbers = numbers.filter(item => item.trim() !== ''); 
-
-            let outputArray = [];
-            let sCount = 0;
-            let bCount = 0;
-            let lineCounterForSeparator = 0; 
-            let blockCounter = 0;
-
-            if (numbers.length > 0) {
-                blockCounter = 1; // Start with one block if there are numbers
-            }
-
-            for (let i = 0; i < numbers.length; i++) {
-                let numStr = numbers[i];
-                let currentLine;
-
-                if (i % 3 === 0) { 
-                    currentLine = 'S' + numStr;
-                    sCount++;
-                } else { 
-                    let isNegative = numStr.startsWith('-');
-                    let absNumStr = isNegative ? numStr.substring(1) : numStr;
-
-                    let parts = absNumStr.split('.');
-                    let integerPart = parts[0];
-                    let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
-                    
-                    let paddedIntegerPart = integerPart;
-                    if (integerPart.length < 4) {
-                         paddedIntegerPart = integerPart.padStart(4, '0');
-                    }
-                    
-                    let processedNum = (isNegative ? '-' : '') + paddedIntegerPart + decimalPart;
-                    currentLine = 'B' + processedNum;
-                    bCount++;
-                }
-                outputArray.push(currentLine);
-                lineCounterForSeparator++;
-
-                if (lineCounterForSeparator % 49 === 0 && i < numbers.length - 1) {
-                    outputArray.push('------------');
-                    blockCounter++;
-                    lineCounterForSeparator = 0; // Reset line counter for the new block
-                }
-            }
-
-            let formattedNumbers = outputArray.join('\n');
-            document.getElementById('output').value = formattedNumbers;
-            
-            document.getElementById('totalNumbers').textContent = numbers.length;
-            document.getElementById('sNumbers').textContent = sCount;
-            document.getElementById('bNumbers').textContent = bCount;
-            document.getElementById('blockCount').textContent = numbers.length === 0 ? 0 : blockCounter;
-            document.getElementById('stats').style.display = numbers.length > 0 ? 'grid' : 'none';
-        }
-
-        function clearAll() {
-            document.getElementById('input').value = '';
-            document.getElementById('output').value = '';
-            document.getElementById('stats').style.display = 'none';
-            document.getElementById('totalNumbers').textContent = '0';
-            document.getElementById('sNumbers').textContent = '0';
-            document.getElementById('bNumbers').textContent = '0';
-            document.getElementById('blockCount').textContent = '0';
-            document.getElementById('input').focus();
-        }
-
-        function copyOutput() {
-            const output = document.getElementById('output');
-            if (output.value.trim() === '') {
-                showToast('Nothing to copy!', '#f44336', 'fas fa-exclamation-circle');
-                return;
-            }
-            
-            output.select();
-            navigator.clipboard.writeText(output.value).then(() => {
-                showToast('Copied to clipboard!', '#4CAF50', 'fas fa-check-circle');
-            }).catch(err => {
-                try {
-                    document.execCommand('copy');
-                    showToast('Copied to clipboard! (fallback)', '#4CAF50', 'fas fa-check-circle');
-                } catch (e) {
-                    showToast('Failed to copy.', '#f44336', 'fas fa-times-circle');
-                }
-            });
-        }
-
-        function showToast(message, color = '#4CAF50', iconClass = 'fas fa-check-circle') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-            
-            toast.style.background = color;
-            toastMessage.textContent = message;
-            toastIcon.className = iconClass; 
-            toast.style.transform = 'translateX(0) translateY(0)';
-            toast.style.opacity = '1';
-            
-            setTimeout(() => {
-                toast.style.transform = 'translateX(400px) translateY(0)';
-                toast.style.opacity = '0';
-            }, 3000);
-        }
-
-        function exportData(format) {
-            const outputText = document.getElementById('output').value;
-            if (!outputText.trim()) {
-                showToast('Nothing to export!', '#f44336', 'fas fa-exclamation-circle');
-                return;
-            }
-
-            let data;
-            let filename;
-            let mimeType;
-
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-
-            if (format === 'txt') {
-                data = outputText;
-                filename = `numbers_output_${timestamp}.txt`;
-                mimeType = 'text/plain;charset=utf-8;';
-            } else if (format === 'csv') {
-                const lines = outputText.split('\n');
-                let csvContent = "Type,Value\n";
-                lines.forEach(line => {
-                    if (line.trim() !== '') {
-                        const type = line.charAt(0);
-                        const value = line.substring(1);
-                        const escapedValue = value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value;
-                        csvContent += `${type},${escapedValue}\n`;
-                    }
-                });
-                data = csvContent;
-                filename = `numbers_output_${timestamp}.csv`;
-                mimeType = 'text/csv;charset=utf-8;';
-            } else {
-                return; 
-            }
-
-            const blob = new Blob([data], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            const exportOptions = document.getElementById('exportOptionsContent');
-            if (exportOptions.classList.contains('show')) {
-                exportOptions.classList.remove('show');
-            }
-            showToast(`Exported as ${format.toUpperCase()}!`, '#1abc9c', 'fas fa-download');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const boxes = document.querySelectorAll('.box');
-            boxes.forEach((box, index) => {
-                box.style.animationDelay = `${index * 0.2}s`;
-            });
-
-            const exportBtn = document.getElementById('toggleExportOptions');
-            const exportOptions = document.getElementById('exportOptionsContent');
-
-            exportBtn.addEventListener('click', function(event) {
-                exportOptions.classList.toggle('show');
-                event.stopPropagation(); 
-            });
-
-            window.addEventListener('click', function(event) {
-                if (!exportBtn.contains(event.target) && !exportOptions.contains(event.target)) {
-                    if (exportOptions.classList.contains('show')) {
-                        exportOptions.classList.remove('show');
-                    }
-                }
-            });
-            
-            const inputField = document.getElementById('input');
-            inputField.addEventListener('input', formatNumbers); 
-
-            document.querySelectorAll('.btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
-                });
-            });
-
-            inputField.addEventListener('input', (e) => {
-                const input = e.target;
-                if (input.value.trim() === '') {
-                    input.style.borderColor = '#e1e5e9';
-                } else if (!/^[\d\s.-]*$/.test(input.value)) {
-                    input.style.borderColor = '#f5576c';
-                    showToast('Please enter only numbers, spaces, and decimal points', '#f5576c', 'fas fa-exclamation-circle');
-                } else {
-                    input.style.borderColor = '#1abc9c';
-                }
-                formatNumbers();
-            });
-        });
-    </script>
-</body>
-</html>
